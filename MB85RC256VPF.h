@@ -22,8 +22,9 @@ class MB85RC256VPF
     int _i2cAddr;
 
     // User populated
-    int i2cWrite( int i2cAddr, uint8_t *data, int len, bool start, bool stop );
-    int i2cRead( int i2cAddr, uint8_t *data, int len, bool start, bool stop );
+    bool i2cStart( int i2cAddr, bool isWrite );
+    int i2cWrite( uint8_t *data, int len,  bool stop );
+    int i2cRead( uint8_t *data, int len, bool stop, bool ack = true );
 }
 
 #endif /* MB85RC256VPF_H_ */
