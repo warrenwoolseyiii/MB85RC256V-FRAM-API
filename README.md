@@ -8,4 +8,4 @@ Simply clone this repoistory into your project and implement a user stub for the
 3. `int MB85RC256VPF::i2cRead( uint8_t *data, int len, bool stop, bool ack )` - which reads len amount of the payload into data and issues a stop condition if the stop argument is set to true, returns the amount of bytes read.
 
 # Examples
-A sample implementation using my [https://github.com/warrenwoolseyiii/Arduino-SAMD20](SAMD20 Arduino SDK) is baked into the main class and can be used by defining `SAMD` at compile time. 
+A sample implementation using my [SAMD20 Arduino SDK](https://github.com/warrenwoolseyiii/Arduino-SAMD20) is baked into the main class and can be used by defining `SAMD` at compile time. 
