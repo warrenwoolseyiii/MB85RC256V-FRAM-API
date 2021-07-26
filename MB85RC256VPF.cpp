@@ -1,25 +1,26 @@
 #include "MB85RC256VPF.h"
 
-#if defined( SAMD20 )
+#if defined( SAMD )
 #include <I2C.h>
 #include <Arduino.h>
 #include <Debug.h>
-#endif /* SAMD20 */
+#endif /* SAMD */
 
 MB85RC256VPF::MB85RC256VPF( int a210Value )
 {
-    _i2cAddr =
-        ( MB85RC256VPF_DEVICE_CODE << 4 ) | ( ( 0x07 & a210Value ) << 1 );
+    _i2cAddr = ( MB85RC256VPF_DEVICE_CODE << 3 ) | ( 0x07 & a210Value );
 }
 
 int MB85RC256VPF::GetID()
 {
-    if( !i2cStart( MB85RC256VPF_RSV_SLAVE_ID_0, true ) ) return 0;
-    if( i2cWrite( (uint8_t *)&_i2cAddr, 1, false ) != 1 ) return 0;
-    if( !i2cStart( MB85RC256VPF_RSV_SLAVE_ID_1, false ) ) return 0;
-    int deviceID = 0;
-    if( i2cRead( (uint8_t *)&deviceID, 3, true ) != 3 ) return 0;
-    return deviceID;
+    int tmpAddr = MB85RC256VPF_RSV_SLAVE_ID_0;
+    int tmpPayload = _i2cAddr << 1;
+    if( !i2cStart( tmpAddr, true ) ) return 0;
+    if( i2cWrite( (uint8_t *)&tmpPayload, 1, false ) != 1 ) return 0;
+    if( !i2cStart( tmpAddr, false ) ) return 0;
+    uint8_t b[3];
+    if( i2cRead( b, 3, true ) != 3 ) return 0;
+    return ( b[0] << 16 | b[1] << 8 | b[2] );
 }
 
 int MB85RC256VPF::WriteBytes( int addr, uint8_t *data, int len )
@@ -29,7 +30,8 @@ int MB85RC256VPF::WriteBytes( int addr, uint8_t *data, int len )
 
     // Start, send the address, and data
     if( !i2cStart( _i2cAddr, true ) ) return 0;
-    if( i2cWrite( (uint8_t *)&addr, 2, false ) != 2 ) return 0;
+    uint8_t b[] = { addr >> 8, addr };
+    if( i2cWrite( b, 2, false ) != 2 ) return 0;
     return i2cWrite( data, len, true );
 }
 
@@ -40,7 +42,8 @@ int MB85RC256VPF::ReadBytes( int addr, uint8_t *data, int len )
 
     // Start, send the address, start, read the data
     if( !i2cStart( _i2cAddr, true ) ) return 0;
-    if( i2cWrite( (uint8_t *)&addr, 2, false ) != 2 ) return 0;
+    uint8_t b[] = { addr >> 8, addr };
+    if( i2cWrite( b, 2, false ) != 2 ) return 0;
     if( !i2cStart( _i2cAddr, false ) ) return 0;
     return i2cRead( data, len, true );
 }
@@ -55,7 +58,7 @@ int MB85RC256VPF::ReadBytesFromLastAddr( uint8_t *data, int len )
 // User populated
 bool MB85RC256VPF::i2cStart( int i2cAddr, bool isWrite )
 {
-#if defined( SAMD20 )
+#if defined( SAMD )
     int err = TwoWire.MasterStartTransac( i2cAddr & 0xFF, isWrite );
     if( err != I2CM_ERR_NONE ) {
         SYS_ERR( "i2cStart failure, %d\n", err );
@@ -64,13 +67,14 @@ bool MB85RC256VPF::i2cStart( int i2cAddr, bool isWrite )
     }
     return true;
 #else
+    // TODO: User implementation here
     return false;
-#endif /* SAMD20 */
+#endif /* SAMD */
 }
 
 int MB85RC256VPF::i2cWrite( uint8_t *data, int len, bool stop )
 {
-#if defined( SAMD20 )
+#if defined( SAMD )
     int err = TwoWire.MasterSendBytes( data, len, stop );
     if( err != I2CM_ERR_NONE ) {
         SYS_ERR( "i2cWrite failure, %d\n", err );
@@ -79,13 +83,14 @@ int MB85RC256VPF::i2cWrite( uint8_t *data, int len, bool stop )
     }
     return len;
 #else
+    // TODO: User implementation here
     return 0;
-#endif /* SAMD20 */
+#endif /* SAMD */
 }
 
 int MB85RC256VPF::i2cRead( uint8_t *data, int len, bool stop, bool ack )
 {
-#if defined( SAMD20 )
+#if defined( SAMD )
     int err = TwoWire.MasterReceiveBytes( data, len, ack, stop );
     if( err != I2CM_ERR_NONE ) {
         SYS_ERR( "i2cWrite failure, %d\n", err );
@@ -94,6 +99,7 @@ int MB85RC256VPF::i2cRead( uint8_t *data, int len, bool stop, bool ack )
     }
     return len;
 #else
+    // TODO: User implementation here
     return 0;
-#endif /* SAMD20 */
+#endif /* SAMD */
 }
