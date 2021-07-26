@@ -6,8 +6,7 @@
 #define MB85RC256VPF_DEVICE_CODE 0b1010
 #define MB85RC256VPF_DEVICE_ID 0x00A510
 #define MB85RC256VPF_MEMORY_SIZE 0x8000
-#define MB85RC256VPF_RSV_SLAVE_ID_0 0xF8
-#define MB85RC256VPF_RSV_SLAVE_ID_1 0xF9
+#define MB85RC256VPF_RSV_SLAVE_ID_0 ( 0xF8 >> 1 )
 
 class MB85RC256VPF
 {
@@ -22,8 +21,9 @@ class MB85RC256VPF
     int _i2cAddr;
 
     // User populated
-    int i2cWrite( int i2cAddr, uint8_t *data, int len, bool start, bool stop );
-    int i2cRead( int i2cAddr, uint8_t *data, int len, bool start, bool stop );
-}
+    bool i2cStart( int i2cAddr, bool isWrite );
+    int  i2cWrite( uint8_t *data, int len, bool stop );
+    int  i2cRead( uint8_t *data, int len, bool stop, bool ack = true );
+};
 
 #endif /* MB85RC256VPF_H_ */
