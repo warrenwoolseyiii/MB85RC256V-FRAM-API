@@ -6,3 +6,6 @@ Simply clone this repoistory into your project and implement a user stub for the
 1. `bool MB85RC256VPF::i2cStart( int i2cAddr, bool isWrite )` - which initializes a write or read i2c transaction by sending a start condition with the slave address, returns true if the transaction was successfully started and false otherwise.
 2. `int MB85RC256VPF::i2cWrite( uint8_t *data, int len, bool stop )` - which writes len amount of the payload data and issues a stop condition if the stop argument is set to true, returns the amount of bytes written.
 3. `int MB85RC256VPF::i2cRead( uint8_t *data, int len, bool stop, bool ack )` - which reads len amount of the payload into data and issues a stop condition if the stop argument is set to true, returns the amount of bytes read.
+
+# Examples
+A sample implementation using my [https://github.com/warrenwoolseyiii/Arduino-SAMD20](SAMD20 Arduino SDK) is baked into the main class and can be used by defining `SAMD` at compile time. 
